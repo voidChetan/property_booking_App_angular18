@@ -1,0 +1,13 @@
+/* You can add global styles to this file, and also import other style files */
+.form-control {
+    border: 1px solid #a05db4 !important;
+} 
+
+.form-select {
+    border: 1px solid #a05db4 !important;
+} 
+.bi {
+    vertical-align: -.125em;
+    pointer-events: none;
+    fill: currentColor;
+}

@@ -1,0 +1,232 @@
+<div class="container mt-5">
+    
+     @if (isFormView()) {
+        <div class="card mb-4">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-6">
+                        <h5>Create/Update Site</h5>
+                    </div>
+                    <div class="col-6 text-end">
+                        <button class="btn btn-sm btn-success" (click)="toggleView()">Go To List</button>
+                    </div>
+                </div>
+             
+            </div>
+            <div class="card-body">
+              <form>
+                <div class="row mb-3"> 
+                  <div class="col-md-6">
+                    <label for="siteTitle" class="form-label">Site Title</label>
+                    <input type="text" #title ="ngModel" required minlength="4" class="form-control" name="siteTitle" [(ngModel)]="formObj.siteTitle" id="siteTitle" placeholder="Enter Site Title">
+                    @if(title.touched) {
+                        <div class="text-danger">
+                            @if(title.errors?.['required']) {
+                                <span>This is Required</span>
+                            }
+                            @if (title.errors?.['minlength']) {
+                                <span>MIn 5 Char Required</span>
+                            } 
+                        </div>
+                    }  
+                </div>
+                </div>
+      
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label for="location" class="form-label">Location</label>
+                    <input type="text" class="form-control"  name="location" [(ngModel)]="formObj.location" id="location" placeholder="Enter Location">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="propertyTypeId" class="form-label">Select Property Type </label>
+                    <select name="propertyTypeId" [(ngModel)]="formObj.propertyTypeId"  class="form-select">
+                        <option value="">Select Property Type</option>
+                        @for (item of propertyType$ | async; track $index) {
+                            <option [value]="item.propertTypeId" > {{item.propertyType}}</option>
+                        }
+                       
+                    </select> 
+                  </div>
+                </div> 
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label for="city" class="form-label">City</label>
+                    <input type="text" class="form-control"  name="city" [(ngModel)]="formObj.city" id="city" placeholder="Enter City">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="pincode" class="form-label">Pincode</label>
+                    <input type="text" class="form-control"  name="pincode"  [(ngModel)]="formObj.pincode" id="pincode" placeholder="Enter Pincode">
+                  </div>
+                </div>
+      
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <label for="state" class="form-label">State</label>
+                    <input type="text" class="form-control"  name="state" [(ngModel)]="formObj.state" id="state" placeholder="Enter State">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="totalProperties" class="form-label">Total Properties</label>
+                    <input type="number" class="form-control"  name="totalProperties" [(ngModel)]="formObj.totalProperties" placeholder="Enter Total Properties">
+                  </div>
+                </div> 
+                <button type="button" *ngIf="formObj.siteId == 0" (click)="onSave()" class="btn btn-primary">Save</button>
+                <button type="button"  *ngIf="formObj.siteId !== 0" (click)="onUpdate()" class="btn btn-warning">Update</button>
+              </form>
+            </div>
+          </div>
+     } @else {
+        <div class="card">
+            <div class="card-header">
+                <div class="row"> 
+                    <div class="col-6">
+                        <h5>Site List</h5>
+                    </div>
+                    <div class="col-6 text-end">
+                        <button class="btn btn-sm btn-success" (click)="toggleView()">Create New</button>
+                    </div>
+                </div>
+            
+            </div>
+            <div class="card-body">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Site Title</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">City</th>
+                    <th scope="col">State</th> 
+                    <th scope="col">Total Properties</th> 
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <ng-container *ngIf="gridData.length == 0">
+                    <tr>
+                        <td colspan="7" class="text-center">
+                            <p>No Record Found</p>
+                        </td>
+                    </tr>
+                  </ng-container>
+                  <ng-container *ngIf="gridData.length !== 0">
+                    <tr *ngFor="let data of gridData;let sr= index">
+                        <th scope="row">{{sr+1}}</th>
+                        <td>{{data.siteTitle}}</td>
+                        <td>{{data.location}}</td>
+                        <td>{{data.city}}</td>
+                        <td>{{data.state}}</td>
+                        <td>{{data.totalProperties}}</td>
+                        <td>
+                          <button class="btn btn-warning btn-sm mx-2" (click)="onEdit(data)">Edit</button>
+                          <button class="btn btn-success btn-sm mx-2" (click)="openModal(data)">Properties</button>
+                          <button class="btn btn-danger btn-sm mx-2" (click)="onDelete(data)">Delete</button>
+                        </td>
+                      </tr>
+                  </ng-container>
+                 
+                  <!-- More properties can go here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+     }
+   
+
+    <!-- Property List Table -->
+    
+  </div>
+
+  <div class="modal" #propertyModel>
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content"> 
+        <div class="modal-header">
+          <h4 class="modal-title">Modal Heading</h4>
+          <button type="button" class="btn-close" (click)="closeModal()" data-bs-dismiss="modal"></button>
+        </div> 
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-8">
+              <div class="card">
+                <div class="card-header">
+                  <h5>Properties List</h5>
+                </div>
+                <div class="card-body">
+                  <table class="table table-bordered table-sm">
+                    <thead>
+                      <tr> 
+                        <th scope="col">Property Number</th>
+                        <th scope="col">Facing</th>
+                        <th scope="col">Total Area</th>
+                        <th scope="col">Rate</th> 
+                        <th scope="col">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- Sample Property -->
+                       @for (item of propertyList; track $index) {
+                        <tr> 
+                          <td>{{item.propertyNo}}</td>
+                          <td>{{item.facing}}</td>
+                          <td>{{item.totalArea}}</td>
+                          <td>{{item.rate}}</td> 
+                          <td>
+                            <button class="btn btn-warning btn-sm">Edit</button>
+                            <button class="btn btn-danger btn-sm">Delete</button>
+                          </td>
+                        </tr>
+                       }
+                      
+                      <!-- More properties can go here -->
+                    </tbody>
+                  </table>
+                </div>
+              </div> 
+              
+            </div>
+            <div class="col-4">
+              <div class="card mb-4"> 
+                <div class="card-header">
+                  <h5>Property Details</h5>
+                </div>
+                <div class="card-body">
+                  <form [formGroup]="propertyForm">
+                    <div class="row mb-3"> 
+                      <div class="col-md-12">
+                        <label for="propertyNo" class="form-label">Property Number</label>
+                        <input type="number" formControlName="propertyNo" class="form-control" id="propertyNo" placeholder="Enter Property Number">
+                      </div>
+                    </div>
+          
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <label for="facing" class="form-label">Facing</label>
+                        <input type="text" formControlName="facing" class="form-control" id="facing" placeholder="Enter Facing (e.g., North, East)">
+                      </div>
+                      <div class="col-md-6">
+                        <label for="totalArea" class="form-label">Total Area</label>
+                        <input type="text" formControlName="totalArea" class="form-control" id="totalArea" placeholder="Enter Total Area (e.g., 1500 sqft)">
+                      </div>
+                    </div> 
+                    <div class="row mb-3">
+                      <div class="col-md-12">
+                        <label for="rate" class="form-label">Rate</label>
+                        <input type="number" formControlName="rate" class="form-control" id="rate" placeholder="Enter Rate (e.g., 5000 per sqft)">
+                      </div> 
+                    </div> 
+                    <button type="button" (click)="onSaveProperty()" class="btn btn-primary">Save</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+            
+        
+            <!-- Property Details List Table -->
+           
+        </div> 
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger"  (click)="closeModal()" data-bs-dismiss="modal">Close</button>
+        </div> 
+      </div>
+    </div>
+  </div>
