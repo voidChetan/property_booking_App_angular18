@@ -1,0 +1,74 @@
+<div class="container mt-5"> 
+    <div class="row">
+        <div class="col-8">
+            <div id="customerList">
+                <div class="card">
+                    <div class="card-header bg-warning">
+                      <h5>Properties List</h5>
+                    </div>
+                    <div class="card-body">
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Property Type</th> 
+                            <th scope="col">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @for (item of gridData; track $index) {
+                            <tr>
+                                <th scope="row">{{$index+1}}</th>
+                                <td>{{item.propertyType}}</td> 
+                                <td>
+                                  <button class="btn btn-warning btn-sm" (click)="onEdit(item)">Edit</button>
+                                  <button class="btn btn-danger btn-sm"  (click)="onDelete(item.propertTypeId)">Delete</button>
+                                </td>
+                              </tr>
+                          }
+                          
+                          <!-- More properties can go here -->
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card mb-4">
+                <div class="card-header bg-warning">Add Customer</div>
+                <div class="card-body">
+                    <form [formGroup]="form">
+                        <div class="form-group">
+                            <label for="name">Property Type</label>
+                            <input type="text" formControlName="propertyType" class="form-control" id="name">
+                            @if(form.controls['propertyType'].touched) {
+                                <div class="text-danger">
+                                    @if(form.controls['propertyType'].errors?.['required']) {
+                                        <span>This is Required</span>
+                                    }
+                                    @if (form.controls['propertyType'].errors?.['minlength']) {
+                                        <span>MIn 5 Char Required</span>
+                                    }
+                                    
+                                </div>
+                            }
+                           
+                        </div>
+                        @if(form.controls['propertTypeId'].value == 0) {
+                            <button type="button" (click)="onSave()" [disabled]="!form.valid" class="btn btn-primary mt-2">Save</button>
+                        }@else {
+                            <button type="button" (click)="onUpdate()" [disabled]="!form.valid" class="btn btn-warning mt-2">Update</button>
+                        }
+                       
+                       
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Customer List -->
+   
+</div>

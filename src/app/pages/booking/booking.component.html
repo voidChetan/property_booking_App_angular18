@@ -1,0 +1,173 @@
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Site Properties Management</h2>
+
+  <!-- Site Dropdown -->
+  <div class="mb-4">
+    <label for="siteDropdown" class="form-label">Select Site</label>
+    <select id="siteDropdown" class="form-select" [(ngModel)]="siteId" (change)="getProperties($event)">
+      <option value="" disabled selected>Select a Site</option>
+      <!-- Dynamically populate site options -->
+      @for (item of sites$ | async; track $index) {
+      <option [value]="item.siteId">{{item.siteTitle}}</option>
+      }
+
+
+    </select>
+  </div>
+
+  <!-- Property Boxes -->
+  <div class="row">
+    <!-- Available Property Example -->
+    @for (item of propertyList; track $index) {
+    <div class="col-md-3">
+      <div   [className]="checkIfPropertyAvailable(item.propertyId) != null ? 'property-box sold':'property-box available'">
+        <div class="row">
+          <div class="col-6">
+
+          </div>
+        </div>
+        <h5>{{item.propertyNo}}</h5>
+        <div class="row">
+          <div class="col-6">
+            <p>{{item.totalArea}} sqft, {{item.facing}} Facing</p>
+          </div>
+          <div class="col-6">
+            <p>Rate: ₹{{item.rate}}/sqft</p> 
+          </div>
+        </div>
+       
+        
+     
+        @if(checkIfPropertyAvailable(item.propertyId) != null) {
+          <div class="row">
+            <div class="col-6">
+              <p>{{checkIfPropertyAvailable(item.propertyId).customerName}} </p>
+            </div>
+            <div class="col-6 text-end">
+              <button class="btn btn-danger btn-sm">Sold</button>
+            </div>
+          </div> 
+        } @else { 
+          <div class="row">
+            <div class="col-6">
+              
+            </div>
+            <div class="col-6 text-end">
+              <button class="btn btn-success" (click)="openModal(item)">Book</button>
+            </div>
+          </div>  
+        } 
+      </div>
+    </div>
+    }
+
+    <!-- <div class="col-md-3">
+        <div class="property-box available">
+          <h5>Flat No 2</h5>
+          <p>1500 sqft, East Facing</p>
+          <p>Rate: ₹5000/sqft</p>
+          <button class="btn btn-success">Book</button>
+        </div>
+      </div>
+      
+      <div class="col-md-3">
+        <div class="property-box sold">
+          <h5>Flat No 3</h5>
+          <p>1200 sqft, North Facing</p>
+          <p>Rate: ₹4500/sqft</p>
+          <button class="btn btn-danger">Sold</button>
+        </div>
+      </div>
+      <div class="col-md-3"> 
+        <div class="property-box available">
+          <h5>Flat No 4</h5>
+          <p>1500 sqft, East Facing</p>
+          <p>Rate: ₹5000/sqft</p>
+          <button class="btn btn-success">Book</button>
+        </div>
+      </div>
+      <div class="col-md-3"> 
+      <div class="property-box available">
+        <h5>Flat No 5</h5>
+        <p>1500 sqft, East Facing</p>
+        <p>Rate: ₹5000/sqft</p>
+        <button class="btn btn-success">Book</button>
+      </div>
+    </div> -->
+
+    <!-- More properties can be added dynamically here -->
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Modal Heading</h4>
+        <button type="button" class="btn-close" (click)="closeModal()" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body"> 
+        <form [formGroup]="bookingForm">
+          <div class="row">
+            <div class="col-6">
+              <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" formControlName="name" class="form-control" id="name" required>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="form-group">
+                <label for="mobile">Mobile</label>
+                <input type="text" formControlName="mobile" class="form-control" id="mobile" required>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="form-group">
+                <label for="emailid">Email</label>
+                <input type="email" formControlName="emailid" class="form-control" id="emailid" required>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="form-group">
+                <label for="address">Address</label>
+                <input type="text" formControlName="address" class="form-control" id="address" required>
+              </div>
+            </div>
+          </div>
+         
+
+          <div class="row mb-3">
+            <!-- <div class="col-md-4">
+              <label for="propertyId" class="form-label">Select Property </label>
+              <select name="" id="" class="form-select">
+                <option value="">Flat No 1</option>
+                <option value="">Flat No 2</option>
+                <option value="">Flat No 3</option>
+              </select>
+            </div> -->
+            <div class="col-md-4">
+              <label for="bookingDate" class="form-label">Booking Date</label>
+              <input type="date" formControlName="bookindDate" class="form-control" id="bookingDate">
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="bookingRate" class="form-label">Booking Rate</label>
+              <input type="number" formControlName="" class="form-control" id="bookingRate" placeholder="Enter Booking Rate">
+            </div>
+            <div class="col-md-6">
+              <label for="totalAmount" class="form-label">Total Amount</label>
+              <input type="number" formControlName="bookingRate" class="form-control" id="totalAmount" placeholder="Enter Total Amount">
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" (click)="doBooking()">Save</button>
+        </form> 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" (click)="closeModal()" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
